@@ -1,0 +1,14 @@
+node_modules/
+client/node_modules/
+ml-service/__pycache__/
+ml-service/models/*.pkl
+.env
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+
+
+
+

@@ -1,0 +1,66 @@
+.permission-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.permission-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.permission-modal h2 {
+  color: #667eea;
+  margin-bottom: 16px;
+  font-size: 24px;
+}
+
+.permission-modal p {
+  color: #666;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.permission-modal ul {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+}
+
+.permission-modal li {
+  padding: 8px 0;
+  color: #333;
+  font-size: 14px;
+}
+
+.permission-note {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #666;
+  margin-top: 16px;
+}
+
+.permission-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.permission-actions .btn {
+  flex: 1;
+}
+
+
