@@ -9,13 +9,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  background: #f8f9fa;
+  background: var(--bg-secondary);
   border-radius: 8px;
+  border: 1px solid var(--border-color);
 }
 
 .stat-label {
   font-weight: 600;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .history-table {
@@ -28,20 +29,21 @@
 }
 
 .history-table th {
-  background: #667eea;
+  background: var(--accent-primary);
   color: white;
-  padding: 12px;
+  padding: 16px;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .history-table td {
   padding: 12px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
 }
 
 .history-table tr:hover {
-  background: #f8f9fa;
+  background: var(--bg-secondary);
 }
 
 .status-badge {
@@ -53,18 +55,18 @@
 }
 
 .status-success {
-  background: #d4edda;
-  color: #155724;
+  background: var(--success);
+  color: white;
 }
 
 .status-blocked {
-  background: #f8d7da;
-  color: #721c24;
+  background: var(--danger);
+  color: white;
 }
 
 .status-mfa_required {
-  background: #fff3cd;
-  color: #856404;
+  background: var(--warning);
+  color: #000;
 }
 
 

@@ -6,6 +6,8 @@ import Dashboard from './components/Dashboard';
 import RiskProfile from './components/RiskProfile';
 import SessionMonitor from './components/SessionMonitor';
 import PermissionRequest from './components/PermissionRequest';
+import ThemeToggle from './components/ThemeToggle';
+import SimulationDemo from './components/SimulationDemo';
 import './App.css';
 
 function App() {
@@ -30,12 +32,14 @@ function App() {
         {!permissionsGranted && (
           <PermissionRequest onGranted={handlePermissionsGranted} />
         )}
+        <ThemeToggle />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/risk-profile" element={<RiskProfile />} />
           <Route path="/session-monitor" element={<SessionMonitor />} />
+          <Route path="/simulations" element={<SimulationDemo />} />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </div>

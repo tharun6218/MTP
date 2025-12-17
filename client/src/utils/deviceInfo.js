@@ -17,15 +17,44 @@ export async function getDeviceInfo() {
   if (navigator.geolocation) {
     try {
       const position = await getCurrentPosition();
-      // Use geolocation to get approximate location
-      // In production, you'd use a reverse geocoding API
+      // Store coordinates for map display
       deviceInfo.location = {
-        country: 'India', // Default, would use geocoding API
-        city: 'Mumbai'
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        country: 'Unknown', // Would use reverse geocoding API in production
+        city: 'Unknown'
       };
+      
+      // Try to get location from IP (fallback)
+      try {
+        const ipResponse = await fetch(`https://ipapi.co/${await getIPAddress()}/json/`);
+        const ipData = await ipResponse.json();
+        if (ipData.country_name) {
+          deviceInfo.location.country = ipData.country_name;
+          deviceInfo.location.city = ipData.city || 'Unknown';
+        }
+      } catch (e) {
+        console.log('IP geolocation failed, using coordinates only');
+      }
     } catch (error) {
       console.log('Geolocation not available:', error.message);
-      // Fallback to default
+      // Fallback: try IP-based geolocation
+      try {
+        const ip = await getIPAddress();
+        const ipResponse = await fetch(`https://ipapi.co/${ip}/json/`);
+        const ipData = await ipResponse.json();
+        deviceInfo.location = {
+          country: ipData.country_name || 'Unknown',
+          city: ipData.city || 'Unknown',
+          latitude: ipData.latitude || null,
+          longitude: ipData.longitude || null
+        };
+      } catch (e) {
+        deviceInfo.location = {
+          country: 'Unknown',
+          city: 'Unknown'
+        };
+      }
     }
   }
 

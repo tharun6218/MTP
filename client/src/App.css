@@ -1,6 +1,11 @@
+@import './theme.css';
+
 .App {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  z-index: 1;
+  background-color: var(--bg-primary);
+  transition: background-color 0.3s ease;
 }
 
 .container {
@@ -10,18 +15,20 @@
 }
 
 .card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
   padding: 28px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
   margin-bottom: 24px;
-  transition: transform 0.3s, box-shadow 0.3s;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
 }
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-primary);
 }
 
 .btn {
@@ -56,33 +63,39 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--accent-primary);
   color: white;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-secondary {
-  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
-  color: white;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+  background: var(--bg-secondary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  background: var(--danger);
   color: white;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-danger:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .input-group {
@@ -99,19 +112,19 @@
 .input-group input {
   width: 100%;
   padding: 14px 16px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--input-border);
   border-radius: 8px;
   font-size: 16px;
   transition: all 0.3s ease;
-  background: #f8f9fa;
+  background: var(--input-bg);
+  color: var(--text-primary);
 }
 
 .input-group input:focus {
   outline: none;
-  border-color: #667eea;
-  background: white;
+  border-color: var(--accent-primary);
+  background: var(--bg-primary);
   box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-  transform: translateY(-2px);
 }
 
 .risk-badge {
@@ -123,18 +136,18 @@
 }
 
 .risk-low {
-  background: #d4edda;
-  color: #155724;
+  background: var(--risk-low);
+  color: white;
 }
 
 .risk-medium {
-  background: #fff3cd;
-  color: #856404;
+  background: var(--risk-medium);
+  color: #000;
 }
 
 .risk-high {
-  background: #f8d7da;
-  color: #721c24;
+  background: var(--risk-high);
+  color: white;
 }
 
 .alert {
@@ -162,17 +175,20 @@
 }
 
 .navbar {
-  background: white;
-  padding: 16px 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--navbar-bg);
+  padding: 20px 32px;
+  box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .navbar h1 {
-  color: #667eea;
-  font-size: 24px;
+  color: var(--accent-primary);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .navbar-nav {
@@ -200,36 +216,19 @@
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--accent-primary);
   color: white;
   padding: 32px;
   border-radius: 16px;
   text-align: center;
-  transition: transform 0.3s, box-shadow 0.3s;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-  animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-  0% { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
 }
 
 .stat-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .stat-card h3 {

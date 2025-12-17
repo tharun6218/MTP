@@ -14,6 +14,7 @@ const Navbar = ({ user, onLogout }) => {
         <Link to="/dashboard">Dashboard</Link>
         <Link to="/risk-profile">Risk Profile</Link>
         <Link to="/session-monitor">Session Monitor</Link>
+        <Link to="/simulations">🎭 Scenarios</Link>
         {user && (
           <span className="user-info">
             {user.username}

@@ -6,21 +6,26 @@
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="Adaptive Authentication & Session Security" />
     <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
     <title>Adaptive Auth System</title>
     <script>
       // Runtime configuration - set API URL based on environment
-      window.APP_CONFIG = {
-        API_URL: (function() {
-          // Check if we're on Render (production)
-          if (window.location.hostname.includes('onrender.com')) {
-            // Default Render backend URL - UPDATE THIS with your actual backend URL
-            return 'https://mtp-9e6g.onrender.com';
-          }
-          // Local development
-          return 'http://localhost:5000';
-        })()
-      };
-      console.log('API URL configured:', window.APP_CONFIG.API_URL);
+      // This runs BEFORE React loads, ensuring API URL is available immediately
+      (function() {
+        const hostname = window.location.hostname;
+        const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+        
+        window.APP_CONFIG = {
+          API_URL: isLocalhost 
+            ? 'http://localhost:5000'  // Local development
+            : 'https://mtp-9e6g.onrender.com'  // Deployed backend - UPDATE THIS with your actual backend URL
+        };
+        
+        console.log('🌐 Environment detected:', isLocalhost ? 'Local Development' : 'Production');
+        console.log('🔗 API URL configured:', window.APP_CONFIG.API_URL);
+      })();
     </script>
   </head>
   <body>

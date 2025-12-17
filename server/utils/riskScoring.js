@@ -96,26 +96,30 @@ function extractSessionFeatures(session, activityData) {
 function calculateRuleBasedRisk(user, loginData) {
   let riskScore = 0;
   
-  // New device: +30 points
+  // Enhanced rule-based scoring with better thresholds
   const isNewDevice = !user.knownDevices.some(d => d.deviceId === loginData.deviceId);
-  if (isNewDevice) riskScore += 30;
+  if (isNewDevice) riskScore += 25;  // Reduced from 30 for better balance
   
-  // New location: +25 points
+  // New location: +20 points (reduced for better balance)
   const isNewLocation = !user.knownLocations.some(l => 
     l.country === loginData.location.country
   );
-  if (isNewLocation) riskScore += 25;
+  if (isNewLocation) riskScore += 20;
   
-  // Odd hour login: +15 points
+  // Odd hour login: +12 points (reduced)
   const hour = new Date().getHours();
-  if (hour < 6 || hour > 22) riskScore += 15;
+  if (hour < 6 || hour > 22) riskScore += 12;
   
-  // Recent failed attempts: +20 points per attempt
-  const recentFailed = user.loginHistory.filter(l => l.status === 'blocked').slice(-5).length;
-  riskScore += recentFailed * 20;
+  // Recent failed attempts: +15 points per attempt (capped at 3)
+  const recentFailed = Math.min(user.loginHistory.filter(l => l.status === 'blocked').slice(-5).length, 3);
+  riskScore += recentFailed * 15;
   
-  // IP reputation: +20 if suspicious
-  if (loginData.ipReputation < 0.3) riskScore += 20;
+  // IP reputation: +18 if suspicious
+  if (loginData.ipReputation < 0.3) riskScore += 18;
+  
+  // Geo velocity (impossible travel): +30 points
+  const geoVelocity = extractLoginFeatures(user, loginData).geoVelocity;
+  if (geoVelocity === 1) riskScore += 30;
   
   return Math.min(riskScore, 100);
 }
@@ -129,23 +133,29 @@ function calculateSessionRuleBasedRisk(session, activityData) {
   const activities = session.activityLog || [];
   const recentActivities = activities.slice(-10);
   
-  // High request rate: +25 points
+  // Enhanced rule-based session scoring with better thresholds
   const requestsPerMinute = calculateRequestsPerMinute(recentActivities);
-  if (requestsPerMinute > 30) riskScore += 25;
+  if (requestsPerMinute > 50) riskScore += 30;  // Higher threshold, more points
+  else if (requestsPerMinute > 30) riskScore += 15;  // Medium threshold
   
-  // IP change: +40 points
+  // IP change: +35 points (critical indicator)
   if (activityData.ip && activityData.ip !== session.ip) {
-    riskScore += 40;
+    riskScore += 35;
   }
   
-  // High error rate: +20 points
+  // High error rate: +20 points (unchanged)
   const errorRate = recentActivities.filter(a => a.statusCode >= 400).length / Math.max(recentActivities.length, 1);
   if (errorRate > 0.3) riskScore += 20;
+  else if (errorRate > 0.15) riskScore += 10;  // Medium error rate
   
-  // User-Agent change: +30 points
+  // User-Agent change: +25 points (reduced slightly)
   if (detectUserAgentChanges(recentActivities)) {
-    riskScore += 30;
+    riskScore += 25;
   }
+  
+  // Multiple unique endpoints (scanning behavior): +15 points
+  const uniqueEndpoints = new Set(recentActivities.map(a => a.endpoint)).size;
+  if (uniqueEndpoints > 20) riskScore += 15;
   
   return Math.min(riskScore, 100);
 }

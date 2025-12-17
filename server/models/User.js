@@ -31,10 +31,13 @@ const userSchema = new mongoose.Schema({
     timestamp: Date,
     ip: String,
     device: String,
+    deviceId: String,
     browser: String,
     location: {
       country: String,
-      city: String
+      city: String,
+      latitude: Number,
+      longitude: Number
     },
     riskScore: Number,
     status: String // 'success', 'blocked', 'mfa_required'

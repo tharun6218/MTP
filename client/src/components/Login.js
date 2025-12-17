@@ -30,6 +30,8 @@ const Login = () => {
         'x-device': deviceInfo.device,
         'x-country': deviceInfo.location.country,
         'x-city': deviceInfo.location.city,
+        'x-latitude': deviceInfo.location.latitude?.toString() || '',
+        'x-longitude': deviceInfo.location.longitude?.toString() || '',
         'x-ip': ipAddress,
         'x-ip-reputation': '0.7'
       };
@@ -86,6 +88,8 @@ const Login = () => {
           'x-device': deviceInfo.device,
           'x-country': deviceInfo.location.country,
           'x-city': deviceInfo.location.city,
+          'x-latitude': deviceInfo.location.latitude?.toString() || '',
+          'x-longitude': deviceInfo.location.longitude?.toString() || '',
           'x-ip': ipAddress
         }
       });

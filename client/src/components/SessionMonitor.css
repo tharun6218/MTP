@@ -6,11 +6,19 @@
 }
 
 .metric-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--accent-primary);
   color: white;
-  padding: 24px;
-  border-radius: 12px;
+  padding: 28px;
+  border-radius: 16px;
   text-align: center;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
 }
 
 .metric-card h3 {
@@ -34,18 +42,18 @@
   display: flex;
   gap: 16px;
   padding: 12px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
   align-items: center;
 }
 
 .activity-item:hover {
-  background: #f8f9fa;
+  background: var(--bg-secondary);
 }
 
 .activity-time {
   min-width: 100px;
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -59,7 +67,7 @@
 
 .activity-method {
   padding: 4px 8px;
-  background: #667eea;
+  background: var(--accent-primary);
   color: white;
   border-radius: 4px;
   font-size: 12px;
@@ -70,7 +78,7 @@
 
 .activity-endpoint {
   font-family: monospace;
-  color: #333;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
@@ -84,18 +92,18 @@
 }
 
 .status-2xx {
-  background: #d4edda;
-  color: #155724;
+  background: var(--success);
+  color: white;
 }
 
 .status-4xx {
-  background: #fff3cd;
-  color: #856404;
+  background: var(--warning);
+  color: #000;
 }
 
 .status-5xx {
-  background: #f8d7da;
-  color: #721c24;
+  background: var(--danger);
+  color: white;
 }
 
 

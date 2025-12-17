@@ -25,7 +25,9 @@ const sessionSchema = new mongoose.Schema({
   },
   location: {
     country: String,
-    city: String
+    city: String,
+    latitude: Number,
+    longitude: Number
   },
   startTime: {
     type: Date,

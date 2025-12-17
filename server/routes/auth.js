@@ -83,7 +83,9 @@ router.post('/login', [
       browser: req.headers['user-agent'] || 'Unknown Browser',
       location: {
         country: req.headers['x-country'] || 'Unknown',
-        city: req.headers['x-city'] || 'Unknown'
+        city: req.headers['x-city'] || 'Unknown',
+        latitude: req.headers['x-latitude'] ? parseFloat(req.headers['x-latitude']) : null,
+        longitude: req.headers['x-longitude'] ? parseFloat(req.headers['x-longitude']) : null
       },
       ipReputation: parseFloat(req.headers['x-ip-reputation']) || 0.5
     };
@@ -126,7 +128,11 @@ router.post('/login', [
     if (riskScore >= 70) {
       user.loginHistory.push({
         timestamp: new Date(),
-        ...loginData,
+        ip: loginData.ip,
+        device: loginData.device,
+        deviceId: loginData.deviceId,
+        browser: loginData.browser,
+        location: loginData.location,
         riskScore: riskScore,
         status: 'blocked'
       });
@@ -143,7 +149,11 @@ router.post('/login', [
     if (riskScore >= 40) {
       user.loginHistory.push({
         timestamp: new Date(),
-        ...loginData,
+        ip: loginData.ip,
+        device: loginData.device,
+        deviceId: loginData.deviceId,
+        browser: loginData.browser,
+        location: loginData.location,
         riskScore: riskScore,
         status: 'mfa_required'
       });
@@ -216,7 +226,11 @@ router.post('/login', [
     // Log successful login
     user.loginHistory.push({
       timestamp: new Date(),
-      ...loginData,
+      ip: loginData.ip,
+      device: loginData.device,
+      deviceId: loginData.deviceId,
+      browser: loginData.browser,
+      location: loginData.location,
       riskScore: riskScore,
       status: 'success'
     });
@@ -284,7 +298,9 @@ router.post('/verify-mfa', async (req, res) => {
       browser: req.headers['user-agent'] || 'Unknown Browser',
       location: {
         country: req.headers['x-country'] || 'Unknown',
-        city: req.headers['x-city'] || 'Unknown'
+        city: req.headers['x-city'] || 'Unknown',
+        latitude: req.headers['x-latitude'] ? parseFloat(req.headers['x-latitude']) : null,
+        longitude: req.headers['x-longitude'] ? parseFloat(req.headers['x-longitude']) : null
       }
     };
     
@@ -380,6 +396,129 @@ function generateDeviceId(req) {
   const ip = req.ip || 'unknown';
   return require('crypto').createHash('md5').update(ua + ip).digest('hex');
 }
+
+/**
+ * Get location history grouped by device
+ */
+router.get('/location-history', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1] || req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Get all successful logins with location data
+    const locationHistory = user.loginHistory
+      .filter(login => login.status === 'success' && login.location?.latitude && login.location?.longitude)
+      .map(login => ({
+        timestamp: login.timestamp,
+        device: login.device,
+        deviceId: login.deviceId,
+        browser: login.browser,
+        ip: login.ip,
+        location: {
+          country: login.location.country,
+          city: login.location.city,
+          latitude: login.location.latitude,
+          longitude: login.location.longitude
+        },
+        riskScore: login.riskScore
+      }))
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Most recent first
+
+    // Group by device
+    const groupedByDevice = {};
+    locationHistory.forEach(login => {
+      const deviceKey = login.deviceId || login.device;
+      if (!groupedByDevice[deviceKey]) {
+        groupedByDevice[deviceKey] = {
+          deviceId: login.deviceId,
+          device: login.device,
+          browser: login.browser,
+          locations: []
+        };
+      }
+      groupedByDevice[deviceKey].locations.push(login);
+    });
+
+    res.json({
+      locationHistory,
+      groupedByDevice: Object.values(groupedByDevice),
+      totalLocations: locationHistory.length,
+      uniqueDevices: Object.keys(groupedByDevice).length
+    });
+  } catch (error) {
+    console.error('Location history error:', error);
+    res.status(500).json({ error: 'Failed to fetch location history' });
+  }
+});
+
+/**
+ * Simulate login for demonstration purposes
+ */
+router.post('/simulate-login', async (req, res) => {
+  try {
+    const { username, scenario } = req.body;
+    
+    // Find user
+    const user = await User.findOne({ 
+      $or: [{ username }, { email: username }] 
+    });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Extract login metadata from headers
+    const loginData = {
+      ip: req.headers['x-ip'] || req.ip || 'unknown',
+      deviceId: req.headers['x-device-id'] || generateDeviceId(req),
+      device: req.headers['x-device'] || 'Unknown Device',
+      browser: req.headers['user-agent'] || 'Unknown Browser',
+      location: {
+        country: req.headers['x-country'] || 'Unknown',
+        city: req.headers['x-city'] || 'Unknown',
+        latitude: req.headers['x-latitude'] ? parseFloat(req.headers['x-latitude']) : null,
+        longitude: req.headers['x-longitude'] ? parseFloat(req.headers['x-longitude']) : null
+      },
+      ipReputation: parseFloat(req.headers['x-ip-reputation']) || 0.5
+    };
+
+    // Calculate risk score
+    const riskScore = await calculateLoginRisk(user, loginData);
+    const riskLevel = riskScore >= 70 ? 'high' : riskScore >= 40 ? 'medium' : 'low';
+
+    // Determine action based on scenario
+    let action = 'allow';
+    let mfaRequired = false;
+
+    if (riskScore >= 70) {
+      action = 'block';
+    } else if (riskScore >= 40) {
+      action = 'mfa';
+      mfaRequired = true;
+    }
+
+    res.json({
+      message: `Simulation completed - ${action === 'block' ? 'Login blocked' : mfaRequired ? 'MFA required' : 'Login allowed'}`,
+      riskScore: riskScore,
+      riskLevel: riskLevel,
+      action: action,
+      mfaRequired: mfaRequired,
+      loginData: loginData
+    });
+  } catch (error) {
+    console.error('Simulation error:', error);
+    res.status(500).json({ error: 'Simulation failed' });
+  }
+});
 
 module.exports = router;
 
