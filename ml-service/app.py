@@ -6,6 +6,7 @@ from sklearn.preprocessing import StandardScaler
 import joblib
 import os
 import json
+import sys
 
 app = Flask(__name__)
 CORS(app)
@@ -269,13 +270,29 @@ def train_models():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/', methods=['GET'])
+def root():
+    """Root endpoint"""
+    return jsonify({
+        'message': 'ML Service for Adaptive Authentication',
+        'status': 'running',
+        'version': '1.0.0',
+        'endpoints': {
+            'health': '/api/health',
+            'predict_login': '/api/predict/login',
+            'predict_session': '/api/predict/session',
+            'train': '/api/train'
+        }
+    })
+
 @app.route('/api/health', methods=['GET'])
 def health():
     """Health check endpoint"""
     return jsonify({
         'status': 'healthy',
         'login_model_loaded': login_model is not None,
-        'session_model_loaded': session_model is not None
+        'session_model_loaded': session_model is not None,
+        'python_version': sys.version.split()[0]
     })
 
 if __name__ == '__main__':

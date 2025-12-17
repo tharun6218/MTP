@@ -7,12 +7,52 @@ require('dotenv').config();
 const app = express();
 
 // Middleware
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://mtp-9e6g.onrender.com',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({ 
+  credentials: true, 
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all origins for now - restrict in production
+    }
+  }
+}));
 app.use(express.json());
 app.use(cookieParser());
 
 // Trust proxy to get real IP address
 app.set('trust proxy', true);
+
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Adaptive Authentication API',
+    status: 'running',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      session: '/api/session',
+      risk: '/api/risk'
+    }
+  });
+});
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
