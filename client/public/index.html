@@ -5,7 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="Adaptive Authentication & Session Security" />
+    <link rel="icon" href="data:," />
     <title>Adaptive Auth System</title>
+    <script>
+      // Runtime configuration - set API URL based on environment
+      window.APP_CONFIG = {
+        API_URL: (function() {
+          // Check if we're on Render (production)
+          if (window.location.hostname.includes('onrender.com')) {
+            // Default Render backend URL - UPDATE THIS with your actual backend URL
+            return 'https://mtp-9e6g.onrender.com';
+          }
+          // Local development
+          return 'http://localhost:5000';
+        })()
+      };
+      console.log('API URL configured:', window.APP_CONFIG.API_URL);
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
