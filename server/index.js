@@ -10,7 +10,8 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:3000',
   'https://mtp-9e6g.onrender.com',
-  process.env.FRONTEND_URL
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL
 ].filter(Boolean);
 
 app.use(cors({ 
